@@ -11,12 +11,12 @@ from jinja2 import Environment, FileSystemLoader
 
 # Import Galileo for AI evaluation
 # Comment the below out if you're directly using the OpenAI client instead of the Galileo wrapped client (See step 7)
-#from galileo import galileo_context
-#from galileo.openai import openai as galileo_openai
+from galileo import galileo_context
+from galileo.openai import openai
 
 from agent_framework.agent import Agent
 from agent_framework.state import AgentState
-from openai import OpenAI
+#from openai import OpenAI
 # Comment out the above if you're using the Galileo wrapped client for evaluations (see step 7)
 
 # Add the parent directory to the Python path to ensure tools can be found
@@ -112,10 +112,10 @@ class WeatherVibesAgent(Agent):
         
         # Set up OpenAI client - for use without Galileo's Evaluation (Step 7)
         # Comment out the below line and uncomment the line after it if you're using the Galileo wrapped client for evaluations (Step 7)
-        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        #self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         # Replace standard OpenAI client with Galileo's wrapped version
         # Uncomment the below line and comment out the line above if you're using the Galileo wrapped client for evaluations (Step 7)
-        #self.client = galileo_openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
         # Instead of AgentLogger, use standard Python logging
         self.agent_id = agent_id
@@ -276,8 +276,9 @@ class WeatherVibesAgent(Agent):
         Returns:
             An ACP response payload
         """
-        # Use Galileo's context manager to track this request for evaluation
-        with galileo_context():
+        # Use Galileo's context manager to track this request
+        with galileo_context(project=os.getenv("GALILEO_PROJECT", "weather_vibes"), 
+                           log_stream=os.getenv("GALILEO_LOG_STREAM", "production")):
             # Replace AgentLogger methods with standard logging
             logger.info(f"Processing ACP request: {json.dumps(request)[:100]}...")
             
@@ -314,7 +315,8 @@ class WeatherVibesAgent(Agent):
                 
                 # Step 1: Get weather information
                 logger.info(f"Getting weather for location: {location}")
-                weather_tool = self.tool_registry.get_tool("get_weather")
+                # Create tools directly since the registry might not be working properly
+                weather_tool = WeatherTool()
                 weather_result = await weather_tool.execute(location=location, units=units)
                 
                 if "error" in weather_result:
@@ -326,7 +328,7 @@ class WeatherVibesAgent(Agent):
                 
                 # Step 2: Get recommendations
                 logger.info(f"Getting recommendations based on weather")
-                recommendations_tool = self.tool_registry.get_tool("get_recommendations")
+                recommendations_tool = RecommendationsTool()
                 recommendations = await recommendations_tool.execute(
                     weather=weather_result,
                     max_items=max_recommendations
@@ -334,7 +336,7 @@ class WeatherVibesAgent(Agent):
                 
                 # Step 3: Get matching YouTube video
                 logger.info(f"Finding YouTube video matching weather condition: {weather_result['condition']}")
-                youtube_tool = self.tool_registry.get_tool("find_weather_video")
+                youtube_tool = YouTubeTool()
                 video_result = await youtube_tool.execute(
                     weather_condition=weather_result["condition"],
                     mood_override=video_mood
@@ -371,6 +373,7 @@ class WeatherVibesAgent(Agent):
                     response["metadata"] = metadata
                     
                 logger.info(f"Successfully processed request for location: {location}")
+                galileo_context.flush()
                 return response
                 
             except Exception as e:
