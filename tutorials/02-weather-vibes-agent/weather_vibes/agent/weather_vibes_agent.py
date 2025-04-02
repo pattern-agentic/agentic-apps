@@ -8,11 +8,15 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 from jinja2 import Environment, FileSystemLoader
 
+# Import Galileo for AI evaluation
+# Comment the below out if you're directly using the OpenAI client instead of the Galileo wrapped client (See step 7)
+#from galileo import galileo_context
+#from galileo.openai import openai as galileo_openai
+
 from agent_framework.agent import Agent
 from agent_framework.state import AgentState
 from openai import OpenAI
-# Remove AgentLogger import since it's now abstract
-# from agent_framework.utils.logging import AgentLogger
+# Comment out the above if you're using the Galileo wrapped client for evaluations (see step 7)
 
 # Use absolute imports instead of relative imports
 # Replace: from ..tools import WeatherTool, RecommendationsTool, YouTubeTool
@@ -109,8 +113,12 @@ class WeatherVibesAgent(Agent):
             lstrip_blocks=True
         )
         
-        # Set up OpenAI client instead of OpenAIChat
+        # Set up OpenAI client - for use without Galileo's Evaluation (Step 7)
+        # Comment out the below line and uncomment the line after it if you're using the Galileo wrapped client for evaluations (Step 7)
         self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        # Replace standard OpenAI client with Galileo's wrapped version
+        # Uncomment the below line and comment out the line above if you're using the Galileo wrapped client for evaluations (Step 7)
+        #self.client = galileo_openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
         # Instead of AgentLogger, use standard Python logging
         self.agent_id = agent_id
@@ -271,104 +279,106 @@ class WeatherVibesAgent(Agent):
         Returns:
             An ACP response payload
         """
-        # Replace AgentLogger methods with standard logging
-        logger.info(f"Processing ACP request: {json.dumps(request)[:100]}...")
-        
-        try:
-            # Extract relevant information from the request
-            input_data = request.get("input", {})
-            config = request.get("config", {})
-            metadata = request.get("metadata", {})
+        # Use Galileo's context manager to track this request for evaluation
+        with galileo_context():
+            # Replace AgentLogger methods with standard logging
+            logger.info(f"Processing ACP request: {json.dumps(request)[:100]}...")
             
-            # Parse input and config
-            location = input_data.get("location")
-            units = input_data.get("units", "metric")
-            verbose = config.get("verbose", False)
-            max_recommendations = config.get("max_recommendations", 5)
-            video_mood = config.get("video_mood")
-            
-            # Validate input
-            if not location:
-                logger.error("Invalid input: 'location' field is required")
-                return {
-                    "error": 400,
-                    "message": "Invalid input: 'location' field is required"
-                }
-            
-            # Update search history
-            if not hasattr(self.state, "search_history"):
-                self.state.search_history = []
+            try:
+                # Extract relevant information from the request
+                input_data = request.get("input", {})
+                config = request.get("config", {})
+                metadata = request.get("metadata", {})
                 
-            if location not in self.state.search_history:
-                self.state.search_history.append(location)
-                # Keep only last 5 items
-                if len(self.state.search_history) > 5:
-                    self.state.search_history = self.state.search_history[-5:]
-            
-            # Step 1: Get weather information
-            logger.info(f"Getting weather for location: {location}")
-            weather_tool = self.tool_registry.get_tool("get_weather")
-            weather_result = await weather_tool.execute(location=location, units=units)
-            
-            if "error" in weather_result:
-                logger.error(f"Weather API error: {weather_result['message']}")
+                # Parse input and config
+                location = input_data.get("location")
+                units = input_data.get("units", "metric")
+                verbose = config.get("verbose", False)
+                max_recommendations = config.get("max_recommendations", 5)
+                video_mood = config.get("video_mood")
+                
+                # Validate input
+                if not location:
+                    logger.error("Invalid input: 'location' field is required")
+                    return {
+                        "error": 400,
+                        "message": "Invalid input: 'location' field is required"
+                    }
+                
+                # Update search history
+                if not hasattr(self.state, "search_history"):
+                    self.state.search_history = []
+                    
+                if location not in self.state.search_history:
+                    self.state.search_history.append(location)
+                    # Keep only last 5 items
+                    if len(self.state.search_history) > 5:
+                        self.state.search_history = self.state.search_history[-5:]
+                
+                # Step 1: Get weather information
+                logger.info(f"Getting weather for location: {location}")
+                weather_tool = self.tool_registry.get_tool("get_weather")
+                weather_result = await weather_tool.execute(location=location, units=units)
+                
+                if "error" in weather_result:
+                    logger.error(f"Weather API error: {weather_result['message']}")
+                    return {
+                        "error": 500,
+                        "message": f"Weather API error: {weather_result['message']}"
+                    }
+                
+                # Step 2: Get recommendations
+                logger.info(f"Getting recommendations based on weather")
+                recommendations_tool = self.tool_registry.get_tool("get_recommendations")
+                recommendations = await recommendations_tool.execute(
+                    weather=weather_result,
+                    max_items=max_recommendations
+                )
+                
+                # Step 3: Get matching YouTube video
+                logger.info(f"Finding YouTube video matching weather condition: {weather_result['condition']}")
+                youtube_tool = self.tool_registry.get_tool("find_weather_video")
+                video_result = await youtube_tool.execute(
+                    weather_condition=weather_result["condition"],
+                    mood_override=video_mood
+                )
+                
+                # Prepare the response
+                result = {
+                    "weather": weather_result,
+                    "recommendations": recommendations,
+                    "video": video_result
+                }
+                
+                # If not verbose, filter out some weather details
+                if not verbose and "weather" in result:
+                    result["weather"] = {
+                        "location": weather_result["location"],
+                        "temperature": weather_result["temperature"],
+                        "condition": weather_result["condition"],
+                        "humidity": weather_result["humidity"],
+                        "wind_speed": weather_result["wind_speed"]
+                    }
+                
+                # Format response according to ACP standards
+                response = {
+                    "output": result
+                }
+                
+                # Add the original agent_id to the response
+                if "agent_id" in request:
+                    response["agent_id"] = request["agent_id"]
+                    
+                # Add metadata if present in the request
+                if metadata:
+                    response["metadata"] = metadata
+                    
+                logger.info(f"Successfully processed request for location: {location}")
+                return response
+                
+            except Exception as e:
+                logger.error(f"Error processing request: {str(e)}")
                 return {
                     "error": 500,
-                    "message": f"Weather API error: {weather_result['message']}"
+                    "message": f"Error processing request: {str(e)}"
                 }
-            
-            # Step 2: Get recommendations
-            logger.info(f"Getting recommendations based on weather")
-            recommendations_tool = self.tool_registry.get_tool("get_recommendations")
-            recommendations = await recommendations_tool.execute(
-                weather=weather_result,
-                max_items=max_recommendations
-            )
-            
-            # Step 3: Get matching YouTube video
-            logger.info(f"Finding YouTube video matching weather condition: {weather_result['condition']}")
-            youtube_tool = self.tool_registry.get_tool("find_weather_video")
-            video_result = await youtube_tool.execute(
-                weather_condition=weather_result["condition"],
-                mood_override=video_mood
-            )
-            
-            # Prepare the response
-            result = {
-                "weather": weather_result,
-                "recommendations": recommendations,
-                "video": video_result
-            }
-            
-            # If not verbose, filter out some weather details
-            if not verbose and "weather" in result:
-                result["weather"] = {
-                    "location": weather_result["location"],
-                    "temperature": weather_result["temperature"],
-                    "condition": weather_result["condition"],
-                    "humidity": weather_result["humidity"],
-                    "wind_speed": weather_result["wind_speed"]
-                }
-            
-            # Format response according to ACP standards
-            response = {
-                "output": result
-            }
-            
-            # Add the original agent_id to the response
-            if "agent_id" in request:
-                response["agent_id"] = request["agent_id"]
-                
-            # Add metadata if present in the request
-            if metadata:
-                response["metadata"] = metadata
-                
-            logger.info(f"Successfully processed request for location: {location}")
-            return response
-            
-        except Exception as e:
-            logger.error(f"Error processing request: {str(e)}")
-            return {
-                "error": 500,
-                "message": f"Error processing request: {str(e)}"
-            }
