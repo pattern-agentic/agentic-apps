@@ -4,6 +4,7 @@ Weather Vibes Agent implementation using the Simple Agent Framework.
 import os
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from jinja2 import Environment, FileSystemLoader
@@ -18,33 +19,29 @@ from agent_framework.state import AgentState
 from openai import OpenAI
 # Comment out the above if you're using the Galileo wrapped client for evaluations (see step 7)
 
-# Use absolute imports instead of relative imports
-# Replace: from ..tools import WeatherTool, RecommendationsTool, YouTubeTool
+# Add the parent directory to the Python path to ensure tools can be found
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir) 
+if parent_dir not in sys.path:
+    sys.path.append(parent_dir)
+
+# Import tools - this approach works regardless of how the script is run
 try:
-    # Try direct import first
-    from weather_vibes.tools.weather_tool import WeatherTool
-    from weather_vibes.tools.recommendations_tool import RecommendationsTool
-    from weather_vibes.tools.youtube_tool import YouTubeTool
+    from tools.weather_tool import WeatherTool
+    from tools.recommendation_tool import RecommendationsTool
+    from tools.youtube_tool import YouTubeTool
+    print("Successfully imported tools directly")
 except ImportError:
+    print("Failed direct import, trying with package...")
+    # If direct import fails, try with package prefix
     try:
-        # Try with tutorials prefix
-        from tutorials.weather_vibes_agent.weather_vibes.tools.weather_tool import WeatherTool
-        from tutorials.weather_vibes_agent.weather_vibes.tools.recommendations_tool import RecommendationsTool
-        from tutorials.weather_vibes_agent.weather_vibes.tools.youtube_tool import YouTubeTool
+        from weather_vibes.tools.weather_tool import WeatherTool
+        from weather_vibes.tools.recommendation_tool import RecommendationsTool
+        from weather_vibes.tools.youtube_tool import YouTubeTool
+        print("Successfully imported tools with package prefix")
     except ImportError:
-        # Final fallback - try relative import as a last resort
-        try:
-            from ..tools.weather_tool import WeatherTool
-            from ..tools.recommendations_tool import RecommendationsTool
-            from ..tools.youtube_tool import YouTubeTool
-        except ImportError:
-            # Directly import from the current directory structure
-            import sys
-            import os.path
-            sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            from tools.weather_tool import WeatherTool
-            from tools.recommendations_tool import RecommendationsTool
-            from tools.youtube_tool import YouTubeTool
+        print("All import attempts failed. Check your Python path and file structure.")
+        raise
 
 from .descriptor import WEATHER_VIBES_DESCRIPTOR
 
