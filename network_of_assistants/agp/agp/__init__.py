@@ -1,6 +1,6 @@
 import asyncio
 import datetime
-from typing import Callable
+from typing import Coroutine
 
 import agp_bindings
 
@@ -65,7 +65,7 @@ class AGP:
 
     async def receive(
         self,
-        callback: Callable[[bytes], None],
+        callback: Coroutine[[bytes], None],
     ):
         # define the background task
         async def background_task():
@@ -77,7 +77,7 @@ class AGP:
                             session=self.session_info.id
                         )
                         # call the callback function
-                        callback(msg_rcv)
+                        await callback(msg_rcv)
                     except asyncio.CancelledError:
                         break
                     except Exception as e:
