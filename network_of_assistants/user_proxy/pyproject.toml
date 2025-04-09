@@ -6,6 +6,7 @@ requires-python = ">=3.13"
 dependencies = [
     "agp"
 ]
+
 [tool.uv.sources]
 agp = { workspace = true }
 

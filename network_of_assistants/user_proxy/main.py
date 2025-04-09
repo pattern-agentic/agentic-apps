@@ -1,42 +1,55 @@
+import argparse
+import asyncio
 from agp import AGP
+import json
 
-agp = AGP(
-    agp_endpoint="http://localhost:12345",
-    local_id="localid",
-    shared_space="chat",
-)
+# Queue for receiving responses
+response_queue = asyncio.Queue()
 
 def command_callback(response):
-    # This function will be called with the response from agp.sendmessage
-    # print("Response from command:", response)
     decoded_message = response.decode("utf-8")
-    print(f"Received message: {decoded_message}")
-    prompt_for_command()
+    data = json.loads(decoded_message)
+    print(data.message)
+    response_queue.put_nowait(decoded_message)
 
-async def prompt_for_command():
-    command = input("Enter command: ").strip().lower()
+async def main(args):
+    agp = AGP(
+        agp_endpoint=args.endpoint,
+        local_id=args.local_id,
+        shared_space=args.shared_space,
+    )
 
-    if command == "quit":
-        print("Exiting the application. Goodbye!")
-        return
-    else:
-        await agp.publish(msg=command.encode("utf-8"))
-        # Send the command using the agp library, with the command_callback as the callback function
-        # agp.sendmessage(command, command_callback)
-
-async def main():
-    print("Welcome to the NoA! Type your command. Type 'quit' to exit.")
-    # agp = AGP(
-    #     agp_endpoint="http://localhost:12345",
-    #     local_id="localid",
-    #     shared_space="chat",
-    # )
-
+    print("Welcome to the NoA! Type your message. Type 'quit' to exit.")
     await agp.init()
+    asyncio.create_task(agp.receive(callback=command_callback))
 
-    # Connect to the AGP server and start receiving messages
-    await agp.receive(callback=command_callback)
-    prompt_for_command()
+    while True:
+        input = input("Message: ").strip().lower()
+        if input == "quit":
+            print("Exiting the application. Goodbye!")
+            break
+
+        print("Sending message...")
+
+        message = {
+
+            "type": "ChatMessage",
+            "author":"user",
+            "message": input,
+
+        }
+
+        await agp.publish(msg=json.dumps(message).encode("utf-8"))
+
+        print("Waiting for response...")
+        response = await response_queue.get()
+        print(f"Received message: {response}")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Start AGP command interface.")
+    parser.add_argument("--endpoint", type=str, default="http://localhost:46357" , help="AGP endpoint URL (e.g., http://localhost:46357)")
+    parser.add_argument("--local-id", type=str, default="localid", help="Local ID to identify this instance")
+    parser.add_argument("--shared-space", type=str, default="chat", help="Shared space name for communication")
+
+    args = parser.parse_args()
+    asyncio.run(main(args))
