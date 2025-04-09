@@ -43,7 +43,7 @@ async def main():
             await agp.publish(msg=str(answer).encode("utf-8"))
 
     # Connect to the AGP server and start receiving messages
-    await agp.connect_and_receive(callback=on_message_received)
+    await agp.receive(callback=on_message_received)
     await agp.receive_task
 
 
@@ -53,8 +53,14 @@ if __name__ == "__main__":
     moderator_agent = ModeratorAgent()
 
     agents_list = [
-        {"name": "catalyst-assistant", "description": "An assistant agent specialized in Cisco Catalyst products."},
-        {"name": "meraki-assistant", "description": "An assistant agent specialized in Cisco Meraki products."},
+        {
+            "name": "catalyst-assistant",
+            "description": "An assistant agent specialized in Cisco Catalyst products.",
+        },
+        {
+            "name": "meraki-assistant",
+            "description": "An assistant agent specialized in Cisco Meraki products.",
+        },
         {
             "name": "splunk-assistant",
             "description": "An assistant agent specialized in Splunk integration with Cisco products.",
@@ -63,7 +69,10 @@ if __name__ == "__main__":
             "name": "thousandeyes-assistant",
             "description": "An assistant agent specialized in Cisco Thousand Eyes products.",
         },
-        {"name": "webex-assistant", "description": "An assistant agent specialized in Cisco Webex products."},
+        {
+            "name": "webex-assistant",
+            "description": "An assistant agent specialized in Cisco Webex products.",
+        },
     ]
     agents_list_string = agents_list_to_string(agents_list)
 
