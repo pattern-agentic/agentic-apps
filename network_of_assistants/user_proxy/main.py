@@ -6,11 +6,19 @@ import json
 # Queue for receiving responses
 response_queue = asyncio.Queue()
 
-def command_callback(response):
+async def command_callback(response):
     decoded_message = response.decode("utf-8")
     data = json.loads(decoded_message)
-    print(data.message)
-    response_queue.put_nowait(decoded_message)
+
+
+    if data.type == "ChatMessage":
+        print('author:', data.author)
+        print('message;', data.message)
+    elif data.type == "RequestToSpeak":
+        print('debug:', data.type, data.author, data.target)
+        if data.targer == 'user':
+            response_queue.put_nowait(decoded_message)
+
 
 async def main(args):
     agp = AGP(
