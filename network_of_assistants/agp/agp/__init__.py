@@ -65,7 +65,7 @@ class AGP:
 
     async def receive(
         self,
-        callback: Coroutine[[bytes], None],
+        callback: Coroutine,
     ):
         # define the background task
         async def background_task():
