@@ -24,8 +24,8 @@ async def main(args):
     asyncio.create_task(agp.receive(callback=command_callback))
 
     while True:
-        input = input("Message: ").strip().lower()
-        if input == "quit":
+        inputMessage = input("Message: ").strip().lower()
+        if inputMessage == "quit":
             print("Exiting the application. Goodbye!")
             break
 
@@ -35,7 +35,7 @@ async def main(args):
 
             "type": "ChatMessage",
             "author":"user",
-            "message": input,
+            "message": inputMessage,
 
         }
 
