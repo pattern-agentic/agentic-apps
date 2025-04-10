@@ -8,10 +8,8 @@ services:
     networks:
       - app_network
     environment:
-      - AZURE_OPENAI_API_KEY
-      - AZURE_OPENAI_ENDPOINT
-      - AZURE_OPENAI_API_VERSION
-      - AZURE_OPENAI_DEPLOYMENT_NAME
+      - MODEL_BASE_URL
+      - MODEL_API_KEY
       - AGP_ENDPOINT=http://agp:46357
 
   user_proxy:
@@ -21,10 +19,6 @@ services:
     networks:
       - app_network
     environment:
-      - AZURE_OPENAI_API_KEY
-      - AZURE_OPENAI_ENDPOINT
-      - AZURE_OPENAI_API_VERSION
-      - AZURE_OPENAI_DEPLOYMENT_NAME
       - AGP_ENDPOINT=http://agp:46357
     stdin_open: true
     tty: true
@@ -36,10 +30,9 @@ services:
     networks:
       - app_network
     environment:
-      - AZURE_OPENAI_API_KEY
-      - AZURE_OPENAI_ENDPOINT
-      - AZURE_OPENAI_API_VERSION
-      - AZURE_OPENAI_DEPLOYMENT_NAME
+      - ASSISTANT_LLM_ENDPOINT
+      - ASSISTANT_LLM_KEY
+      - ASSISTANT_LLM_TYPE=azure
       - AGP_ENDPOINT=http://agp:46357
 
   agp:
