@@ -2,7 +2,7 @@ import json
 from agp import AGP
 from agent import ModeratorAgent
 from langchain_core.exceptions import OutputParserException
-
+from evaluator import EvaluatorAgent
 
 def agents_list_to_string(agents_list):
     output_strings = []
@@ -44,6 +44,19 @@ async def main():
                     print(f"Sending answer: {answer}")
                     chat_history.append(answer)
                     answer_str = json.dumps(answer)
+                    evaluator_score = evaluator_agent.invoke(
+                        input={
+                            "agents_list": agents_list_string,
+                            "chat_history": chat_history,
+                            "query_message": json_message,
+                            "moderator_answer": answer_str
+                        }
+                    )
+                    if not "NA" in evaluator_score:
+                        if "0" in evaluator_score:
+                            print(f"The evaluator judges that the moderator did not choose the best-fitting agent.")
+                        else:
+                            print(f"The evaluator judges that moderator chose the best-fitting agent.")
                     await agp.publish(msg=answer_str.encode("utf-8"))
 
             except OutputParserException as e:
@@ -75,6 +88,7 @@ if __name__ == "__main__":
     import asyncio
 
     moderator_agent = ModeratorAgent()
+    evaluator_agent = EvaluatorAgent()
 
     agents_list = [
         {
