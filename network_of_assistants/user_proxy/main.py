@@ -2,6 +2,7 @@ import argparse
 import asyncio
 from agp import AGP
 import json
+import os
 
 
 class color:
@@ -65,14 +66,19 @@ async def main(args):
         await request_to_speak_event.wait()
 
 
-if __name__ == "__main__":
+def run():
     parser = argparse.ArgumentParser(description="Start AGP command interface.")
     parser.add_argument(
         "--endpoint",
         type=str,
-        default="http://localhost:46357",
+        default=os.getenv("AGP_ENDPOINT", "http://localhost:12345"),
         help="AGP endpoint URL (e.g., http://localhost:46357)",
     )
 
+    print("AGP endpoint:", parser.parse_args().endpoint)
+
     args = parser.parse_args()
     asyncio.run(main(args))
+
+if __name__ == "__main__":
+    run()

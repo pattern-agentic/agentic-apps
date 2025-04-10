@@ -1,5 +1,6 @@
 import click
 import json
+import os
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core import SimpleKeywordTableIndex
 from llama_index.llms.ollama import Ollama
@@ -47,7 +48,7 @@ async def amain(doc_dir, llm_type, llm_endpoint, llm_key, assistant_id):
     agent = ReActAgent(llm=llm, tools=[qet])
 
     agp = AGP(
-        agp_endpoint="http://localhost:12345",
+        agp_endpoint=os.getenv("AGP_ENDPOINT", "http://localhost:12345"),
         local_id=assistant_id,
         shared_space="chat",
     )
@@ -97,5 +98,8 @@ def main(doc_dir, llm_type, llm_endpoint, llm_key, assistant_id):
     asyncio.run(amain(doc_dir, llm_type, llm_endpoint, llm_key, assistant_id))
 
 
-if __name__ == "__main__":
+def run():
     main()
+
+if __name__ == "__main__":
+    run()

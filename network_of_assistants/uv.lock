@@ -1,5 +1,4 @@
 version = 1
-revision = 1
 requires-python = ">=3.13"
 
 [manifest]
@@ -20,18 +19,19 @@ dependencies = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "agp-bindings", specifier = "==0.2.1" }]
+requires-dist = [{ name = "agp-bindings", specifier = "==0.2.3" }]
 
 [[package]]
 name = "agp-bindings"
-version = "0.2.1"
+version = "0.2.3"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/eb/b9/a5e948982a08f346facb12a178f932772b7521efadff60c7762a77cccaa0/agp_bindings-0.2.1.tar.gz", hash = "sha256:1186375942e21012a20ffca96b5e767c5e1991357fc52bd9011c5a361c33e1d4", size = 167548 }
+sdist = { url = "https://files.pythonhosted.org/packages/aa/52/d9ffa4e8619710dee155f4c9c63717a58ebc9143a148d40e43b3b6e81619/agp_bindings-0.2.3.tar.gz", hash = "sha256:0d93df4ffca5cd650fcc9e9b4b7fee7733f8fc27366d36a1e52d2b5260f4c131", size = 167301 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/98/db/d9434925d33ea9ff5056e39a529924bf2c86867e39ed93e21299f351e143/agp_bindings-0.2.1-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:ade5b71e8da38ee4bf8457e38f7069209042958a28cfce7968502952dfe04115", size = 5417871 },
-    { url = "https://files.pythonhosted.org/packages/9f/a5/92fc599c81e8ab3a611b2497c41733e51b15ebea78375e1f31ee08ef7ac3/agp_bindings-0.2.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:749744d0e4fd95d9afb9d75bc235cfc889cb352b57b1c96c35b363c3ffdc7187", size = 5183776 },
-    { url = "https://files.pythonhosted.org/packages/14/23/60a67d8abc283b8315266e0e4ebf4f9bd8646a8276a291c36c33a00679d3/agp_bindings-0.2.1-cp313-cp313-manylinux_2_38_x86_64.whl", hash = "sha256:228661a49f048b656fad141871f6f56e03498bd180e55d570c2503c84276ee18", size = 5944151 },
-    { url = "https://files.pythonhosted.org/packages/f8/7a/849efa024c9fcf16924cf696e37dbf6f60c717931d65b95031bb84bbc964/agp_bindings-0.2.1-cp313-cp313-win_amd64.whl", hash = "sha256:6c8544cc9e6caca2695674c596d3e0de522d47fe3ed44b536355fd290ac50a93", size = 4579141 },
+    { url = "https://files.pythonhosted.org/packages/fb/30/4db94d09462f6a488ef34af9602e068bad71b2e2221f4c2baa29f27feecf/agp_bindings-0.2.3-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:e4afce427c87e7964a1640d58983188850c139ce3bbbda0bc135c15787f802da", size = 5417872 },
+    { url = "https://files.pythonhosted.org/packages/ce/82/63f30eefcfe43c5600c6b0ff928e565715c10d7b1dbd4cf5b8b574c8f65c/agp_bindings-0.2.3-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:ebeb7e8e3868028d4102d79fb9f6cd89d1da1c8e9aa3e067f5a7b9181ebc20d5", size = 5183809 },
+    { url = "https://files.pythonhosted.org/packages/67/61/fec49afb5c7f5b13c0e3eaa4eece829e1e337ba6f054bc268e875f38973c/agp_bindings-0.2.3-cp313-cp313-manylinux_2_34_aarch64.whl", hash = "sha256:7d4f87e856cbfccaa9127b2d3d8a6ffbf41a195412845c28a7900170e98921ec", size = 5752499 },
+    { url = "https://files.pythonhosted.org/packages/f1/94/8e1139b11d7edd019c6962e4f5dbd7612dfb6327a963df944878f2ddf614/agp_bindings-0.2.3-cp313-cp313-manylinux_2_34_x86_64.whl", hash = "sha256:4b79966243c4c184460aa04a8b7db988ceea84d9810cbfb35b287c44696298af", size = 5951771 },
+    { url = "https://files.pythonhosted.org/packages/38/32/ae14432227926bfccb8b06bbca22679bc46cfe4c403833a4421d39cbb993/agp_bindings-0.2.3-cp313-cp313-win_amd64.whl", hash = "sha256:3bdeb4b28a5761696daa0ab8768e26e88bbfb4a8e2f895f9194a48231ef227c4", size = 4579141 },
 ]
 
 [[package]]
@@ -236,7 +236,7 @@ name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b9/2e/0090cbf739cee7d23781ad4b89a9894a41538e4fcf4c31dcdd705b78eb8b/click-8.1.8.tar.gz", hash = "sha256:ed53c9d8990d83c2a27deae68e4ee337473f6330c040a31d4225c9574d16096a", size = 226593 }
 wheels = [
@@ -1655,7 +1655,7 @@ name = "tqdm"
 version = "4.67.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "colorama", marker = "platform_system == 'Windows'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz", hash = "sha256:f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2", size = 169737 }
 wheels = [

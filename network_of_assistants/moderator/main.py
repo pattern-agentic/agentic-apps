@@ -14,7 +14,7 @@ def agents_list_to_string(agents_list):
 async def main():
     # Instantiate the AGP class
     agp = AGP(
-        agp_endpoint="http://localhost:12345",
+        agp_endpoint=os.getenv("AGP_ENDPOINT", "http://localhost:12345"),
         local_id="moderator",
         shared_space="chat",
     )
@@ -71,7 +71,7 @@ async def main():
     await agp.receive_task
 
 
-if __name__ == "__main__":
+def run():
     import asyncio
 
     moderator_agent = ModeratorAgent()
@@ -106,3 +106,6 @@ if __name__ == "__main__":
 
     # Run the main function
     asyncio.run(main())
+
+if __name__ == "__main__":
+    run()
