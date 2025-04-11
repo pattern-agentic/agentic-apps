@@ -35,9 +35,7 @@ async def amain(doc_dir, llm_type, llm_endpoint, llm_key, assistant_id):
     docs = reader.load_data()
 
     splitter = SentenceSplitter(chunk_size=1024, chunk_overlap=20)
-    index = SimpleKeywordTableIndex.from_documents(
-        docs, transformations=[splitter], llm=llm, show_progress=True
-    )
+    index = SimpleKeywordTableIndex.from_documents(docs, transformations=[splitter], llm=llm, show_progress=True)
 
     qet = QueryEngineTool.from_defaults(
         index.as_query_engine(llm=llm),
@@ -61,20 +59,21 @@ async def amain(doc_dir, llm_type, llm_endpoint, llm_key, assistant_id):
         data = json.loads(decoded_message)
 
         if data["type"] == "ChatMessage":
-            memory.put(
-                ChatMessage(role="user", content=f"{data['author']}: {data['message']}")
-            )
+            print(f"{data['author']}: {data['message']}")
+            memory.put(ChatMessage(role="user", content=f"{data['author']}: {data['message']}"))
 
         elif data["type"] == "RequestToSpeak" and data["target"] == assistant_id:
+            print("Moderator requested me to speak")
             handler = agent.run(user_msg=decoded_message, memory=memory)
             response = await handler
             # Publish a message to the AGP server
             message = {
-                    "type": "ChatMessage",
-                    "author": assistant_id,
-                    "message": str(response),
+                "type": "ChatMessage",
+                "author": assistant_id,
+                "message": str(response),
             }
             message_json = json.dumps(message)
+            print(f"Responding with: {str(response)}")
             await agp.publish(msg=message_json.encode("utf-8"))
 
     # Connect to the AGP server and start receiving messages

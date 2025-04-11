@@ -1,25 +1,44 @@
+import os
 import json
+import argparse
 from agp import AGP
 from agent import ModeratorAgent
 from langchain_core.exceptions import OutputParserException
 from evaluator import EvaluatorAgent
 
-def agents_list_to_string(agents_list):
+def list_available_agents(agents_dir):
+    available_agents_list = []
+
+    for filename in os.listdir(agents_dir):
+        if filename.endswith(".json"):
+            file_path = os.path.join(agents_dir, filename)
+            try:
+                with open(file_path, "r") as file:
+                    data = json.load(file)
+                    available_agents_list.append(
+                        {"name": data["name"].lower().strip().replace(" ", "-"), "description": data["description"]}
+                    )
+            except (json.JSONDecodeError, FileNotFoundError, OSError) as e:
+                print(f"Error reading {file_path}: {e}")
+
     output_strings = []
-    for agent in agents_list:
-        output_strings += f"- {agent['name']}: {agent['description']}"
+    for agent in available_agents_list:
+        output_strings.append(f"- {agent['name']}: {agent['description']}")
     return "\n".join(output_strings)
 
 
-async def main():
+async def main(args):
     # Instantiate the AGP class
     agp = AGP(
-        agp_endpoint="http://localhost:12345",
+        agp_endpoint=args.endpoint,
         local_id="moderator",
         shared_space="chat",
     )
-
     await agp.init()
+
+    agents_dir = args.agents_dir
+
+    moderator_agent = ModeratorAgent()
 
     chat_history = []
 
@@ -35,7 +54,7 @@ async def main():
             try:
                 answers_list = moderator_agent.invoke(
                     input={
-                        "agents_list": agents_list_string,
+                        "agents_list": list_available_agents(agents_dir),
                         "chat_history": chat_history,
                         "query_message": json_message,
                     }
@@ -114,5 +133,20 @@ if __name__ == "__main__":
     ]
     agents_list_string = agents_list_to_string(agents_list)
 
+    parser = argparse.ArgumentParser(description="Start AGP command interface.")
+    parser.add_argument(
+        "--endpoint",
+        type=str,
+        default="http://localhost:12345",
+        help="AGP endpoint URL (e.g., http://localhost:12345)",
+    )
+    parser.add_argument(
+        "--agents-dir",
+        type=str,
+        default="../ads/datamodels",
+        help="Directory of available agent specs",
+    )
+    args = parser.parse_args()
+
     # Run the main function
-    asyncio.run(main())
+    asyncio.run(main(args))
