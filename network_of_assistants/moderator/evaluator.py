@@ -97,9 +97,7 @@ class EvaluatorAgent:
             api_key=model_config.api_key,
         )
 
-        parser = JsonOutputParser(pydantic_object=ModelAnswer)
-
-        self.chain = PROMPT_TEMPLATE | llm | parser
+        self.chain = PROMPT_TEMPLATE | llm
 
     def invoke(self, *args, **kwargs):
         return self.chain.invoke(*args, **kwargs)

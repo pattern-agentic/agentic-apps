@@ -143,7 +143,7 @@ def run():
     args = parser.parse_args()
 
     # Run the main function
-    asyncio.run(main())
+    asyncio.run(main(args))
 
 if __name__ == "__main__":
     run()
