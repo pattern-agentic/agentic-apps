@@ -30,7 +30,7 @@ def list_available_agents(agents_dir):
 async def main(args):
     # Instantiate the AGP class
     agp = AGP(
-        agp_endpoint=args.endpoint,
+        agp_endpoint=os.getenv("AGP_ENDPOINT", "http://localhost:12345"),
         local_id="moderator",
         shared_space="chat",
     )
@@ -90,7 +90,7 @@ async def main(args):
     await agp.receive_task
 
 
-if __name__ == "__main__":
+def run():
     import asyncio
 
     parser = argparse.ArgumentParser(description="Start AGP command interface.")
@@ -109,4 +109,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Run the main function
-    asyncio.run(main(args))
+    asyncio.run(main())
+
+if __name__ == "__main__":
+    run()

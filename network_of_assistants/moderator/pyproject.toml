@@ -17,3 +17,6 @@ agp = { workspace = true }
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
+
+[project.scripts]
+moderator = "main:run"

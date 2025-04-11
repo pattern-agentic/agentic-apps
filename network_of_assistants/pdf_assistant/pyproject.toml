@@ -19,3 +19,6 @@ agp = { workspace = true }
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
+
+[project.scripts]
+pdf-assistant = "main:run"
