@@ -26,48 +26,44 @@ a supervisor, allowing user and product assistants to directly interact.
 
 ## Communication between Agents
 
-<img width="718" alt="image" src="https://github.com/user-attachments/assets/0b0332d7-b506-42bb-a951-392ebfcd5fb6" />
+<img width="704" alt="image" src="https://github.com/user-attachments/assets/83ec5302-0e2a-4536-808c-5097066d928d" />
 
 ---
 
-<img width="721" alt="image" src="https://github.com/user-attachments/assets/c2451bca-8fdf-4bba-b68b-77a1beadd94f" />
+<img width="725" alt="image" src="https://github.com/user-attachments/assets/ae1508ed-896c-4222-bbdd-f06cb4aa726d" />
 
 ---
 
-<img width="732" alt="image" src="https://github.com/user-attachments/assets/480bf45e-0b8a-4feb-afb0-aa8c4f45c4a6" />
+<img width="724" alt="image" src="https://github.com/user-attachments/assets/cd10157f-e9c5-4d65-a6b3-c7fe6fa519f9" />
 
 ---
 
-<img width="738" alt="image" src="https://github.com/user-attachments/assets/29d77f25-d0ce-40c9-9ded-b27d314fc62b" />
+<img width="723" alt="image" src="https://github.com/user-attachments/assets/80e2eba6-617c-4f8b-a0fd-b3e5ededb4f1" />
 
 ---
 
-<img width="697" alt="image" src="https://github.com/user-attachments/assets/f786e863-e3bf-4a5a-a9dc-a85fdf1ea88f" />
+<img width="710" alt="image" src="https://github.com/user-attachments/assets/bd7fee89-f6cc-4edd-91a9-322ec5e7dc5f" />
 
 ---
 
-<img width="692" alt="image" src="https://github.com/user-attachments/assets/15032c7c-7129-4d3b-8b58-2b3f979b165a" />
+<img width="718" alt="image" src="https://github.com/user-attachments/assets/91cb9349-5640-4eac-b68f-463e3beab8cf" />
 
 ---
 
-<img width="840" alt="image" src="https://github.com/user-attachments/assets/2f600db3-952e-4d41-9d7b-11b74bca091f" />
+<img width="848" alt="image" src="https://github.com/user-attachments/assets/58cf6258-58a4-4d25-9f1b-39c60913c82b" />
 
 ---
 
-<img width="725" alt="image" src="https://github.com/user-attachments/assets/6ade50e8-dc50-4553-9ce5-82052690f700" />
+<img width="723" alt="image" src="https://github.com/user-attachments/assets/f3e394b7-2c9a-4af8-a13b-9b2f85269490" />
 
 ---
 
-<img width="697" alt="image" src="https://github.com/user-attachments/assets/03c8cac4-0101-40b3-8f92-560102feb12a" />
+<img width="709" alt="image" src="https://github.com/user-attachments/assets/ab5c47aa-8c8f-48ff-9b32-3f40fafaf7b6" />
 
 ---
 
-<img width="721" alt="image" src="https://github.com/user-attachments/assets/66dc0796-044e-46d9-b9f1-97665e30f28d" />
+<img width="738" alt="image" src="https://github.com/user-attachments/assets/0db10c88-42a1-425e-87ab-ca4fab8fca7c" />
 
 ---
 
-<img width="789" alt="image" src="https://github.com/user-attachments/assets/0a110b56-283e-4a2c-b671-1a01da041953" />
-
-
-
-
+<img width="779" alt="image" src="https://github.com/user-attachments/assets/69dee228-f23e-4133-b118-b8e4baabbd5c" />
