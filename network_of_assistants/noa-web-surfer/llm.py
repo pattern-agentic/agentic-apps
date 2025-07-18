@@ -1,3 +1,6 @@
+# Copyright AGNTCY Contributors (https://github.com/agntcy)
+# SPDX-License-Identifier: Apache-2.0
+
 from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from autogen_ext.models.openai import OpenAIChatCompletionClient

@@ -1,3 +1,4 @@
+
 {{/*
 Base name for the assistant component
 */}}
