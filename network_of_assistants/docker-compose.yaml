@@ -1,47 +1,108 @@
-version: '3.8'
-
 services:
-  moderator:
-    build:
-      context: .
-      dockerfile: moderator/Dockerfile
-    networks:
-      - app_network
-    environment:
-      - MODEL_BASE_URL
-      - MODEL_API_KEY
-      - AGP_ENDPOINT=http://agp:46357
 
-  user_proxy:
-    build:
-      context: .
-      dockerfile: user_proxy/Dockerfile
+  noa-slim:
+    image: ghcr.io/agntcy/slim:0.3.15
     networks:
       - app_network
+    ports:
+    - "46357:46357"
+    volumes:
+      - ./noa-slim/slim-config.yaml:/config.yaml
+    command: ["/slim", "--config", "/config.yaml"]
+
+  noa-moderator:
+    build:
+      context: .
+      dockerfile: noa-moderator/Dockerfile
+    networks:
+      - app_network
+    depends_on:
+      - noa-slim
+    volumes:
+      - ./dir:/app/dir
     environment:
-      - AGP_ENDPOINT=http://agp:46357
+      - MODERATOR_LLM_TYPE=openai
+      - MODERATOR_LLM_MODEL=gpt-4o
+      - MODERATOR_LLM_BASE_URL
+      - MODERATOR_LLM_API_KEY
+      - SLIM_ENDPOINT=http://noa-slim:46357
+      - AGENTS_DIR=/app/dir/datamodels
+
+  noa-file-assistant:
+    build:
+      context: .
+      dockerfile: noa-file-assistant/Dockerfile
+    networks:
+      - app_network
+    depends_on:
+      - noa-slim
+      - noa-moderator
+    volumes:
+      - ./noa-file-assistant/files:/home/files
+    environment:
+      - ASSISTANT_LLM_TYPE=openai
+      - ASSISTANT_LLM_MODEL=gpt-4o
+      - ASSISTANT_LLM_BASE_URL
+      - ASSISTANT_LLM_API_KEY
+      - ASSISTANT_RAG_BASE_URL
+      - ASSISTANT_RAG_API_KEY
+      - SLIM_ENDPOINT=http://noa-slim:46357
+      - ASSISTANT_ID=noa-file-assistant
+      - ASSISTANT_DOC_DIR=/home/files
+      - FILE_URL=https://arxiv.org/pdf/2410.10934?
+
+  noa-web-surfer:
+    build:
+      context: .
+      dockerfile: noa-web-surfer/Dockerfile
+    networks:
+      - app_network
+    depends_on:
+      - noa-slim
+      - noa-moderator
+    environment:
+      - WEB_SURFER_LLM_TYPE=openai
+      - WEB_SURFER_LLM_MODEL=gpt-4o
+      - WEB_SURFER_LLM_BASE_URL
+      - WEB_SURFER_LLM_API_KEY
+      - SLIM_ENDPOINT=http://noa-slim:46357
+      - WEB_SURFER_ID=noa-web-surfer-assistant
+
+  noa-math-assistant:
+    build:
+      context: .
+      dockerfile: noa-math-assistant/Dockerfile
+    networks:
+      - app_network
+    depends_on:
+      - noa-slim
+      - noa-moderator
+    environment:
+      - MATH_ASSISTANT_LLM_TYPE=openai
+      - MATH_ASSISTANT_LLM_MODEL=gpt-4o
+      - MATH_ASSISTANT_LLM_BASE_URL
+      - MATH_ASSISTANT_LLM_API_KEY
+      - SLIM_ENDPOINT=http://noa-slim:46357
+      - MATH_ASSISTANT_ID=noa-math-assistant
+
+  noa-user-proxy:
+    build:
+      context: .
+      dockerfile: noa-user-proxy/Dockerfile
+    networks:
+      - app_network
+    ports:
+      - "8000:8000"
+    environment:
+      - SLIM_ENDPOINT=http://noa-slim:46357
     stdin_open: true
     tty: true
-
-  pdf_assistant:
-    build:
-      context: .
-      dockerfile: pdf_assistant/Dockerfile
-    networks:
-      - app_network
-    environment:
-      - ASSISTANT_LLM_ENDPOINT
-      - ASSISTANT_LLM_KEY
-      - ASSISTANT_LLM_TYPE=azure
-      - AGP_ENDPOINT=http://agp:46357
-
-  agp:
-    image: ghcr.io/agntcy/agp/gw:0.3.11
-    networks:
-      - app_network
-    volumes:
-      - ./agp-config.yaml:/config.yaml
-    command: ["/gateway", "--config", "/config.yaml"]
+    depends_on:
+      - noa-slim
+      - noa-moderator
+      - noa-file-assistant
+      - noa-web-surfer
+      - noa-math-assistant
 
 networks:
   app_network:

@@ -1,0 +1,23 @@
+{
+  "name": "File Assistant",
+  "description": "An assistant agent specialized in retrieving information from a set of files. (Example query: who is the third author in the ML research paper?)",
+  "version": "v1.0.0",
+  "extensions": [],
+  "skills": [
+    {
+      "category_uid": "1",
+      "class_name": "Document and Passage Retrieval",
+      "class_uid": "10305",
+      "category_name": "Natural Language Processing"
+    },
+    {
+      "category_uid": "6",
+      "class_name": "Document or Database Question Answering",
+      "class_uid": "602",
+      "category_name": "Retrieval Augmented Generation"
+    }
+  ],
+  "authors": [
+    "Cisco Systems"
+  ]
+}

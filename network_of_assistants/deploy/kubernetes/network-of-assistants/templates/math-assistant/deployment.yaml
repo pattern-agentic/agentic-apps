@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "network-of-assistants.math-assistant.fullname" . }}
+  labels:
+    {{- include "network-of-assistants.math-assistant.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "network-of-assistants.math-assistant.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "network-of-assistants.math-assistant.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "network-of-assistants.math-assistant.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.networkOfAssistants.mathAssistant.image.repository }}:{{ .Values.networkOfAssistants.mathAssistant.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.networkOfAssistants.mathAssistant.image.pullPolicy }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: SLIM_ENDPOINT
+              value: "http://{{ include "network-of-assistants.slim.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.networkOfAssistants.slim.service.port }}"
+            - name: WITH_OBS
+              value: "{{ .Values.observability.enabled }}"
+            - name: OTLP_HTTP_ENDPOINT
+              value: "{{ .Values.observability.opentelemetry.http.endpoint }}"
+            - name: OTLP_GRPC_ENDPOINT
+              value: "{{ .Values.observability.opentelemetry.grpc.endpoint }}"
+            - name: MATH_ASSISTANT_LLM_TYPE
+              value: "{{ .Values.networkOfAssistants.mathAssistant.llm.type }}"
+            - name: MATH_ASSISTANT_LLM_MODEL
+              value: "{{ .Values.networkOfAssistants.mathAssistant.llm.model }}"
+            - name: MATH_ASSISTANT_LLM_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.networkOfAssistants.mathAssistant.llm.remoteAPISecret.existingSecret }}
+                  key: {{ .Values.networkOfAssistants.mathAssistant.llm.remoteAPISecret.secretKeys.address }}
+            - name: MATH_ASSISTANT_LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.networkOfAssistants.mathAssistant.llm.remoteAPISecret.existingSecret }}
+                  key: {{ .Values.networkOfAssistants.mathAssistant.llm.remoteAPISecret.secretKeys.key }}
+          {{- if .Values.networkOfAssistants.mathAssistant.environment }}
+          {{- range $key, $val := .Values.networkOfAssistants.mathAssistant.environment }}
+            - name: {{ $key }}
+              value: "{{ $val }}"
+          {{- end }}
+          {{- end }}
+          {{- if .Values.networkOfAssistants.environment }}
+          {{- range $key, $val := .Values.networkOfAssistants.environment }}
+            - name: {{ $key }}
+              value: "{{ $val }}"
+          {{- end }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

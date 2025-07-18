@@ -1,0 +1,17 @@
+{
+    "name": "Math Assistant",
+    "description": "An assistant which can perform mathematical operations.",
+    "version": "v1.0.0",
+    "extensions": [],
+    "skills": [
+      {
+        "category_uid": "5",
+        "class_name": "Analytical skills",
+        "class_uid": "50101",
+        "category_name": "Pure Mathematical Operations"
+      }
+    ],
+    "authors": [
+      "Cisco Systems"
+    ]
+  }

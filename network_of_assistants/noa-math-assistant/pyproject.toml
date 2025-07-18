@@ -1,0 +1,26 @@
+[project]
+name = "noa-math-assistant"
+version = "0.1.0"
+description = "An assistant which can perform mathematical operations."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+        "slim",
+        "langchain>=0.3.23",
+        "langchain-openai",
+        "langchain-ollama>=0.3.1",
+        "langchain-mistralai>=0.2.10",
+        "pydantic-settings>=2.8.1",
+        "ioa-observe-sdk>=1.0.9",
+        "slim-bindings>=0.3.5",
+    ]
+
+[tool.uv.sources]
+slim = { workspace = true }
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project.scripts]
+noa-math-assistant = "main:run"

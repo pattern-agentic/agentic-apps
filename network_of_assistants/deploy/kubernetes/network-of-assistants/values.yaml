@@ -1,0 +1,153 @@
+
+externalSecrets: []
+
+observability:
+  enabled: false
+  opentelemetry:
+    endpoint: ""
+  executionID: ""
+
+networkOfAssistants:
+
+  slim:
+    image:
+      repository: 'ghcr.io/agntcy/slim'
+      pullPolicy: IfNotPresent
+      tag: "0.3.15"
+    service:
+      type: ClusterIP
+      port: 46357
+
+  userProxy:
+    image:
+      repository: 'ghcr.io/cisco-eti/ioa-observe/container-images/noa-user-proxy'
+      pullPolicy: IfNotPresent
+      tag: "latest"
+    service:
+      type: ClusterIP
+      port: 8000
+  
+  moderator:
+    assistantDirectoryPath: /home/user/dir/datamodels
+    image:
+      repository: 'ghcr.io/cisco-eti/ioa-observe/container-images/noa-moderator'
+      pullPolicy: IfNotPresent
+      tag: "latest"
+    llm:
+      type: openai
+      model: gpt-4o-mini
+      remoteAPISecret:
+        existingSecret: ""
+        address: ""
+        key: ""
+        secretKeys:
+          key: key
+          address: address
+    
+  webSurferAssistant:
+    image:
+      repository: 'ghcr.io/cisco-eti/ioa-observe/container-images/noa-web-surfer'
+      pullPolicy: IfNotPresent
+      tag: "latest"
+    llm:
+      type: openai
+      model: gpt-4o-mini
+      remoteAPISecret:
+        existingSecret: ""
+        address: ""
+        key: ""
+        secretKeys:
+          key: key
+          address: address
+
+  fileAssistant:
+    image:
+      repository: 'ghcr.io/cisco-eti/ioa-observe/container-images/noa-file-assistant'
+      pullPolicy: IfNotPresent
+      tag: "latest"
+    llm:
+      type: openai
+      model: gpt-4o-mini
+      remoteAPISecret:
+        existingSecret: ""
+        address: ""
+        key: ""
+        secretKeys:
+          key: key
+          address: address
+    rag:
+      type: openai
+      model: text-embedding-3-large
+      remoteAPISecret:
+        existingSecret: ""
+        address: ""
+        key: ""
+        secretKeys:
+          key: key
+          address: address
+    fileURL: ""
+    volume:
+      mountPath: /home/user/files
+      size: 10Gi
+      storageClass:
+
+  mathAssistant:
+    image:
+      repository: 'ghcr.io/cisco-eti/ioa-observe/container-images/noa-math-assistant'
+      pullPolicy: IfNotPresent
+      tag: "latest"
+    llm:
+      type: openai
+      model: gpt-4o-mini
+      remoteAPISecret:
+        existingSecret: ""
+        address: ""
+        key: ""
+        secretKeys:
+          key: key
+          address: address      
+
+replicaCount: 1
+
+imagePullSecrets: []
+
+nameOverride: ""
+
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

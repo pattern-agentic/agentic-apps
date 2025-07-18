@@ -1,69 +1,84 @@
-# Network Of Assistants
+# 🌐 Network of Assistants (NoA)
 
-## Problem
+[![Release](https://img.shields.io/github/v/release/agntcy/network-of-assistants?display_name=tag)](CHANGELOG.md)
+[![Lint](https://github.com/agntcy/network-of-assistants/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/marketplace/actions/super-linter)
+[![Contributor-Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-fbab2c.svg)](CODE_OF_CONDUCT.md)
 
-Each Cisco product has its own specialized agent assistant. It is complex to create
-a single assistant that can answer questions on different products. Each question
-coming from the users needs to be routed to right agent, and some questions might
-require knowledge/collaboration of multiple assistants.
+Welcome to Network of Assistants (NoA), a sample multi-agent multi-framework application designed to orchestrate specialized AI assistants to answer general queries. Think of it as an intelligent network of AI minds working collaboratively to get the job done! 🤖✨
 
-## Solution
+At the heart of NoA is a moderator agent that orchestrates conversations between specialized assistants in a chat-like environment. Here's how it works:
 
-Exploit AGP multicast communication to create a “chat room” where multiple assistants
-can cooperate. The chat history is visible to all the agents in the chat without requiring
-central storage. A moderator agent coordinates the discussion among agents and the user in the chat.
-The moderator can discover agents and invite them to join the chat when they are needed.
-User and assistants are members of the same chat, instead of a hierarchal structure through
-a supervisor, allowing user and product assistants to directly interact.
+1. 🗨️ User Interaction: Users interact with the moderator agent which starts a discussion with specialized assistants.
+2. 📡 Agentic Communication: The chat environment is powered by the [Secure Low-Latency Interactive Messaging (SLIM)](https://github.com/agntcy/slim) protocol for broadcasting.
+3. 📖 Agent Discovery: The moderator leverages the [Agent Directory Service](https://github.com/agntcy/dir) to discover and invite specialized agents to the conversation.
+4. 🛠️ Capabilities Framework: Agent capabilities are described using the [Open Agentic Schema Framework (OASF)](https://github.com/agntcy/oasf).
+5. 🔄 Framework & LLM Support: NoA supports multiple frameworks and works with various LLM APIs.
+    - Agentic frameworks: LangChain, LangGraph, Llama-Index, Autogen
+    - LLMs: OpenAI, Azure, Mistral, Ollama
 
-## Components
 
-- AGP – Used to facilitate communication between the agents
-- OASF – Used to declare the Assistants capabilities
-- PDF Assistant – A simple assistant which can answer questions on a given set of PDFs, an example of a native NoA assistant.
-- Moderator – A agent which moderates the chat between the user and the agents.
-- User Proxy – A NoA agent which proxies to the user instead of an LLM
+## 🚀 Getting Started
 
-## Communication between Agents
+Follow these steps to deploy and run your own Network of Assistants! 🌟
 
-<img width="704" alt="image" src="https://github.com/user-attachments/assets/83ec5302-0e2a-4536-808c-5097066d928d" />
+1. Build the Docker Images
 
----
+    From the project's root directory, start by building the required Docker images:
 
-<img width="725" alt="image" src="https://github.com/user-attachments/assets/ae1508ed-896c-4222-bbdd-f06cb4aa726d" />
+    ```bash
+    docker compose build
+    ```
 
----
+2. Configure Your Environment
 
-<img width="724" alt="image" src="https://github.com/user-attachments/assets/cd10157f-e9c5-4d65-a6b3-c7fe6fa519f9" />
+    Create a .env file based on the provided .env-example. Add your credentials for accessing the supported LLMs.
 
----
+3. Start the NoA App
 
-<img width="723" alt="image" src="https://github.com/user-attachments/assets/80e2eba6-617c-4f8b-a0fd-b3e5ededb4f1" />
+    Run the following command to launch the application:
 
----
+    ```bash
+    docker compose up
+    ```
 
-<img width="710" alt="image" src="https://github.com/user-attachments/assets/bd7fee89-f6cc-4edd-91a9-322ec5e7dc5f" />
+4. Verify Your Deployment
 
----
+    Check if your NoA app is up and running by using the health check endpoint:
 
-<img width="718" alt="image" src="https://github.com/user-attachments/assets/91cb9349-5640-4eac-b68f-463e3beab8cf" />
+    ```bash 
+    curl 0.0.0.0:8000/health
+    ```
 
----
+    You should see a response indicating the app is healthy! ✅
 
-<img width="848" alt="image" src="https://github.com/user-attachments/assets/58cf6258-58a4-4d25-9f1b-39c60913c82b" />
+5. Ask NoA a Question
 
----
+    Engage with NoA by sending a query:
 
-<img width="723" alt="image" src="https://github.com/user-attachments/assets/f3e394b7-2c9a-4af8-a13b-9b2f85269490" />
+    ```bash
+    curl -X POST 0.0.0.0:8000/ask -H "Content-Type: application/json" -d '{"message": "Hello, what can you do?"}'
+    ```
 
----
+    And that's all! 🪄 Watch as NoA responds with its capabilities.
 
-<img width="709" alt="image" src="https://github.com/user-attachments/assets/ab5c47aa-8c8f-48ff-9b32-3f40fafaf7b6" />
+## Roadmap
 
----
+See the [open issues](https://github.com/agntcy/network-of-assistants/issues) for a list
+of proposed features (and known issues).
 
-<img width="738" alt="image" src="https://github.com/user-attachments/assets/0db10c88-42a1-425e-87ab-ca4fab8fca7c" />
+## Contributing
 
----
+Contributions are what make the open source community such an amazing place to
+learn, inspire, and create. Any contributions you make are **greatly
+appreciated**. For detailed contributing guidelines, please see
+[CONTRIBUTING.md](CONTRIBUTING.md)
 
-<img width="779" alt="image" src="https://github.com/user-attachments/assets/69dee228-f23e-4133-b118-b8e4baabbd5c" />
+## License
+
+Distributed under the Apache 2.0 License. See [LICENSE](LICENSE) for more
+information.
+
+## Contact
+
+Thomas Feltin - [@tfeltin](https://github.com/tfeltin) - tfeltin@cisco.com
+

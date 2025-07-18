@@ -1,0 +1,17 @@
+{
+    "name": "Web Surfer Assistant",
+    "description": "An assistant which can perform searches on the web and extract information.",
+    "version": "v1.0.0",
+    "extensions": [],
+    "skills": [
+      {
+        "category_uid": "1",
+        "class_name": "Search",
+        "class_uid": "10306",
+        "category_name": "Natural Language Processing"
+      }
+    ],
+    "authors": [
+      "Cisco Systems"
+    ]
+  }

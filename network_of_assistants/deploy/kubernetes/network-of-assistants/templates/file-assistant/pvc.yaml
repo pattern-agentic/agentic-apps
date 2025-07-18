@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "network-of-assistants.file-assistant.fullname" . }}-pvc
+  labels:
+    {{- include "network-of-assistants.file-assistant.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.networkOfAssistants.fileAssistant.volume.size }}
+  {{- if .Values.networkOfAssistants.fileAssistant.volume.storageClass }}
+  storageClassName: {{ .Values.networkOfAssistants.fileAssistant.volume.storageClass }}
+  {{- end }}
+
