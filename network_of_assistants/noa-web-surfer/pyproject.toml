@@ -1,0 +1,31 @@
+[project]
+name = "noa-web-surfer"
+version = "0.1.0"
+description = "An assistant which can perform searches on the web and extract information."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+        "slim",
+        "autogen>=0.8.6",
+        "autogen-ext>=0.5.2",
+        "autogen-agentchat>=0.5.2",
+        "openai",
+        "tiktoken>=0.9.0",
+        "aiofiles",
+        "playwright>=1.51.0",
+        "pydantic-settings>=2.8.1",
+        "ollama>=0.4.7",
+        "azure-ai-inference>=1.0.0b9",
+        "ioa-observe-sdk>=1.0.12",
+        "slim-bindings>=0.3.5",
+    ]
+
+[tool.uv.sources]
+slim = { workspace = true }
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project.scripts]
+noa-web-surfer = "main:run"

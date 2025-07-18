@@ -1,0 +1,21 @@
+[project]
+name = "noa-user-proxy"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "slim",
+    "fastapi>=0.115.9",
+    "uvicorn>=0.34.0",
+    "ioa-observe-sdk>=1.0.12"
+]
+
+[tool.uv.sources]
+slim = { workspace = true }
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project.scripts]
+noa-user-proxy = "main:run"

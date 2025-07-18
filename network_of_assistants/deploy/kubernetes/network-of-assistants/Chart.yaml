@@ -1,0 +1,12 @@
+# Copyright AGNTCY Contributors (https://github.com/agntcy)
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+name: network-of-assistants
+description: Helm chart for the Network of Assistants
+
+type: application
+
+version: 0.1.0
+
+appVersion: "0.1.0"
